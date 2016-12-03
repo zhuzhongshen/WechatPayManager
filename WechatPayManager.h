@@ -37,6 +37,7 @@
 
 //获取预支付订单信息（核心是一个prepayID）
 - (NSMutableDictionary*)getPrepayWithOrderName:(NSString*)name
-                                         price:(NSString*)price;
+                                         price:(NSString*)price
+                                         orderNo:(NSString*)orderNo;
 
 @end

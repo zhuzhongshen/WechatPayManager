@@ -12,7 +12,7 @@
 #define IP_ADDR_IPv4    @"ipv4"
 #define IP_ADDR_IPv6    @"ipv6"
 
-
+//统一下单的接口
 static NSString * kWechatPayUrl = @"https://api.mch.weixin.qq.com/pay/unifiedorder";
 
 #ifdef DEBUG
@@ -136,7 +136,7 @@ static NSString * kWechatPayUrl = @"https://api.mch.weixin.qq.com/pay/unifiedord
         if( [sign isEqualToString:send_sign]){
             if( [result_code isEqualToString:@"SUCCESS"]) {
                 //验证业务处理状态
-                prepayid    = [resParams objectForKey:@"prepay_id"];
+                  prepayid  = [resParams objectForKey:@"prepay_id"];
                 return_code = 0;
                 [self.debugInfo appendFormat:@"获取预支付交易标示成功！\n"];
             }
@@ -157,6 +157,7 @@ static NSString * kWechatPayUrl = @"https://api.mch.weixin.qq.com/pay/unifiedord
 //构建Wechat支付参数
 - (NSMutableDictionary*)getPrepayWithOrderName:(NSString*)name
                                          price:(NSString*)price
+                                       orderNo:(NSString*)orderNo
 {
     //订单标题，展示给用户
     NSString* orderName = name;
@@ -170,7 +171,7 @@ static NSString * kWechatPayUrl = @"https://api.mch.weixin.qq.com/pay/unifiedord
     srand( (unsigned)time(0) );
     NSString *noncestr  = [NSString stringWithFormat:@"%d", rand()];
     //订单编号
-    NSString *orderNO   = [NSString stringWithFormat:@"%ld",time(0)];
+    //NSString *orderNO   = [NSString stringWithFormat:@"%ld",time(0)];
     
     //================================
     //预付单参数订单设置
@@ -183,9 +184,11 @@ static NSString * kWechatPayUrl = @"https://api.mch.weixin.qq.com/pay/unifiedord
     [packageParams setObject: orderType    forKey:@"trade_type"];  //支付类型，固定为APP
     [packageParams setObject: orderName    forKey:@"body"];        //订单描述，展示给用户
     [packageParams setObject: self.notifyUrl  forKey:@"notify_url"];  //支付结果异步通知
-    [packageParams setObject: orderNO      forKey:@"out_trade_no"];//商户订单号
+    [packageParams setObject: orderNo      forKey:@"out_trade_no"];//商户订单号
     [packageParams setObject: orderIP      forKey:@"spbill_create_ip"];//发器支付的机器ip
     [packageParams setObject: orderPrice   forKey:@"total_fee"];       //订单金额，单位为分
+    
+    
     
     //获取prepayId（预支付交易会话标识）
     NSString *prePayid;
@@ -247,6 +250,7 @@ static NSString * kWechatPayUrl = @"https://api.mch.weixin.qq.com/pay/unifiedord
     __block NSString *address;
     [searchArray enumerateObjectsUsingBlock:^(NSString *key, NSUInteger idx, BOOL *stop)
      {
+         WechatLog(@" searchArray = %@    addresses====%@",searchArray,addresses);
          address = addresses[key];
          if(address) *stop = YES;
      } ];
